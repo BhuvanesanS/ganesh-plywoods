@@ -1,0 +1,15 @@
+{
+  "name": "Shree Ganesh Glass, Plywoods & Hardwares",
+  "short_name": "Shree Ganesh",
+  "description": "Plywood, glass, PVC doors and interior hardware in Sriperumbudur.",
+  "icons": [
+    {
+      "src": "/assets/shree-ganesh-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#111217",
+  "background_color": "#111217",
+  "display": "standalone"
+}

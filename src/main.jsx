@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
@@ -38,7 +38,34 @@ function ReliableImage({ src, fallback, alt = '', ...props }) {
   }}/>;
 }
 
+function SiteLoader() {
+  return <div className="site-loader" role="status" aria-label="Loading Shree Ganesh website"><div className="loader-mark"><img src="/assets/shree-ganesh-logo.png" alt=""/><span/><span/><span/></div><p>Shree Ganesh</p><small>Glass · Plywoods · Hardwares</small></div>;
+}
+
+function CursorAura() {
+  useEffect(() => {
+    const finePointer = window.matchMedia('(pointer: fine)');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!finePointer.matches || reducedMotion.matches) return undefined;
+
+    const move = (event) => {
+      document.documentElement.style.setProperty('--cursor-x', `${event.clientX}px`);
+      document.documentElement.style.setProperty('--cursor-y', `${event.clientY}px`);
+      document.body.classList.add('has-cursor-aura');
+      document.body.classList.toggle('cursor-action', Boolean(event.target.closest('a, button, input, select, textarea')));
+    };
+    window.addEventListener('pointermove', move, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', move);
+      document.body.classList.remove('has-cursor-aura');
+      document.body.classList.remove('cursor-action');
+    };
+  }, []);
+  return <><span className="cursor-dot" aria-hidden="true"/><span className="cursor-orbit" aria-hidden="true"/></>;
+}
+
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
@@ -55,7 +82,14 @@ function App() {
     window.open(`${whatsappUrl}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
   };
 
+  useEffect(() => {
+    const loaderTimer = window.setTimeout(() => setIsLoading(false), 1050);
+    return () => window.clearTimeout(loaderTimer);
+  }, []);
+
   return <>
+    {isLoading && <SiteLoader/>}
+    <CursorAura/>
     <div className="utility-bar"><div className="frame utility-content"><span>Glass, plywood &amp; interior hardware in Sriperumbudur</span><span><a href={`tel:+91${primaryPhone}`}>{formatPhone(primaryPhone)}</a><b>•</b><a href={`tel:+91${alternatePhone}`}>{formatPhone(alternatePhone)}</a></span></div></div>
     <header className="site-header">
       <div className="frame nav-wrap">
