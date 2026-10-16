@@ -8,6 +8,8 @@ const whatsappUrl = `https://wa.me/91${primaryPhone}`;
 const mapUrl = 'https://maps.google.com/maps/search/Shree%20Ganesh%20Glass%20Plywoods%20and%20Hardwares/@12.97337556,79.95424085,17z?hl=en';
 const mapEmbed = 'https://www.google.com/maps?q=12.97337556,79.95424085&z=17&output=embed';
 const displayName = 'Ganesh Plywoods';
+const logoUrl = '/assets/shree-ganesh-logo.png';
+const catalogueUrl = '/assets/catalogue/ganesh-plywoods-catalogue.pdf';
 
 const categories = [
   { tag: '01 / Sheet materials', title: 'Plywood for every build', text: 'Normal, colour and waterproof plywood options for furniture, cabinetry and interior work.', image: '/assets/products/plywood.png', products: ['Normal plywood', 'Colour plywoods', 'Waterproof plywoods'] },
@@ -51,7 +53,7 @@ function ReliableImage({ src, fallback, alt = '', ...props }) {
 }
 
 function SiteLoader() {
-  return <div className="site-loader" role="status" aria-label="Loading Ganesh Plywoods website"><div className="loader-mark loader-monogram"><b>GP</b><span/><span/><span/></div><p>{displayName}</p><small>Plywoods · Glass · Hardware</small></div>;
+  return <div className="site-loader" role="status" aria-label="Loading Ganesh Plywoods website"><div className="loader-mark logo-loader"><img src={logoUrl} alt="Shree Ganesh elephant logo" width="96" height="96"/></div><p>{displayName}</p><small>Plywoods · Glass · Hardware</small></div>;
 }
 
 function CursorAura() {
@@ -77,7 +79,7 @@ function CursorAura() {
 }
 
 function PageTransition({ active }) {
-  return <div className={active ? 'page-transition is-active' : 'page-transition'} aria-hidden="true"><span>GP</span><i/><i/><i/></div>;
+  return <div className={active ? 'page-transition is-active' : 'page-transition'} aria-hidden="true"><span><img className="transition-logo" src={logoUrl} alt="" width="96" height="96"/></span><i/><i/><i/></div>;
 }
 
 function App() {
@@ -121,11 +123,12 @@ function App() {
     <div className="utility-bar"><div className="frame utility-content"><span>Glass, plywood &amp; interior hardware in Sriperumbudur</span><span><a href={`tel:+91${primaryPhone}`}>{formatPhone(primaryPhone)}</a><b>•</b><a href={`tel:+91${alternatePhone}`}>{formatPhone(alternatePhone)}</a></span></div></div>
     <header className="site-header">
       <div className="frame nav-wrap">
-        <button className="brand brand-reimagined" onClick={() => navigate('home')} aria-label="Ganesh Plywoods home"><span className="brand-monogram" aria-hidden="true">GP</span><span className="brand-copy"><strong>Ganesh</strong><em>Plywoods</em><small>Glass · Hardware · Interiors</small></span></button>
+        <button className="brand brand-reimagined" onClick={() => navigate('home')} aria-label="Ganesh Plywoods home"><img className="brand-logo" src={logoUrl} alt="Shree Ganesh elephant logo" width="72" height="72"/><span className="brand-copy"><strong>Ganesh</strong><em>Plywoods</em><small>Glass · Hardware · Interiors</small></span></button>
         <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen}>Menu</button>
         <nav className={menuOpen ? 'nav-links nav-open' : 'nav-links'}>
           <button className={page === 'home' ? 'active' : ''} onClick={() => navigate('home')}>Home</button>
           <button className={page === 'products' ? 'active' : ''} onClick={() => navigate('products')}>Products</button>
+          <button className={page === 'catalogue' ? 'active' : ''} onClick={() => navigate('catalogue')}>Catalogue</button>
           <button className={page === 'trade' ? 'active' : ''} onClick={() => navigate('trade')}>Trade desk</button>
           <button className={page === 'contact' ? 'active' : ''} onClick={() => navigate('contact')}>Contact</button>
         </nav>
@@ -135,6 +138,7 @@ function App() {
     <div className="page-content" key={page}>
       {page === 'home' && <Home navigate={navigate} requestQuote={requestQuote} openQuote={() => setQuoteOpen(true)} />}
       {page === 'products' && <Products selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} requestQuote={requestQuote} />}
+      {page === 'catalogue' && <main><CatalogueSection/></main>}
       {page === 'trade' && <Trade navigate={navigate} />}
       {page === 'contact' && <Contact form={form} setForm={setForm} requestQuote={requestQuote} />}
     </div>
@@ -149,12 +153,40 @@ function Home({ navigate, requestQuote, openQuote }) {
     <section className="trust-strip"><div className="frame trust-grid"><div><b>15+</b><span>Years of industry experience</span></div><div><b>1,000+</b><span>Customers served</span></div><div><b>15</b><span>Brands to discuss</span></div><div><b>01</b><span>Direct WhatsApp quote</span></div></div></section>
     <section className="frame quick-grid"><div><b>01</b><span>Plywood &amp; boards</span></div><div><b>02</b><span>Glass &amp; mirrors</span></div><div><b>03</b><span>Doors &amp; hardware</span></div><div><b>04</b><span>Quote support</span></div></section>
     <ProductRail requestQuote={requestQuote}/>
+    <CatalogueSection/>
     <section className="section light-section"><div className="frame"><SectionHeading eyebrow="Core categories" title={<>Everything for a<br/><em>finished space.</em></>} copy="From boards and glass to doors, fittings and finishing details. Send an enquiry to confirm the right option and current availability."/><div className="category-grid">{categories.slice(0, 4).map((item) => <article className="category-card" key={item.title}><ReliableImage src={item.image} fallback="/assets/products/plywood.png" alt={item.title}/><div><p>{item.tag}</p><h3>{item.title}</h3><span>{item.text}</span><button onClick={() => { requestQuote(item.title); }}>Ask for today&apos;s price <b>↗</b></button></div></article>)}</div></div></section>
     <section className="section inspiration-section"><div className="frame"><SectionHeading eyebrow="See the possibilities" title={<>Interior ideas,<br/><em>made tangible.</em></>} copy="A few visual directions to help you start a conversation about your next home or project."/><div className="inspiration-grid">{inspiration.map((item, index) => <article className={index === 0 ? 'inspiration-card wide' : 'inspiration-card'} key={item.title}><ReliableImage src={item.image} fallback="/assets/products/plywood.png" alt={item.title}/><div><p>{item.label}</p><h3>{item.title}</h3></div></article>)}</div><p className="visual-note">Photos are visual inspiration. Product selection and availability are confirmed by the Ganesh Plywoods team.</p></div></section>
     <ExperienceCenter navigate={navigate}/>
     <section className="local-section"><div className="frame local-grid"><div><p className="eyebrow light">Visit the shop</p><h2>A local partner for<br/><em>better interiors.</em></h2><p>Whether you are fixing a single door or planning a complete interior, start with a clear material enquiry. We will help you take the next step.</p><div className="visit-points"><span>01 · Bring your measurements</span><span>02 · Compare the right materials</span><span>03 · Take the next step with clarity</span></div><button className="outline-button" onClick={() => navigate('contact')}>Contact the team <span>↗</span></button></div><div className="shop-card shop-card-reimagined"><ReliableImage src="https://images.unsplash.com/photo-1615874694520-474822394e73?auto=format&fit=crop&w=1500&q=90" fallback="/assets/products/plywood.png" alt="Warm modern interior with timber finishes"/><div className="shop-card-content"><small>GANESH PLYWOODS</small><strong>Plan your space<br/>with confidence.</strong><span>Sriperumbudur, Tamil Nadu</span></div></div></div></section>
     <section className="section map-section"><div className="frame map-layout"><div><p className="eyebrow">Find us easily</p><h2>Come in with a plan.<br/><em>Leave with clarity.</em></h2><p>Open the live map for directions to Ganesh Plywoods in Sriperumbudur.</p><div className="number-grid"><a href={`tel:+91${primaryPhone}`}><small>Primary mobile</small>{formatPhone(primaryPhone)}</a><a href={`tel:+91${alternatePhone}`}><small>Alternate mobile</small>{formatPhone(alternatePhone)}</a></div><a className="primary-button inline-button" href={mapUrl} target="_blank" rel="noreferrer">Open Google Maps <span>↗</span></a></div><div className="map-box"><iframe title="Ganesh Plywoods location" src={mapEmbed} loading="lazy" referrerPolicy="no-referrer-when-downgrade"/></div></div></section>
   </main>;
+}
+
+function CatalogueSection() {
+  const previews = [
+    { page: 1, title: 'Collection overview', description: 'WPC Doors · Volume II' },
+    { page: 2, title: 'Explore the door designs', description: 'A closer look at patterns and finishes' },
+  ];
+
+  return <section className="section catalogue-download" aria-labelledby="catalogue-heading">
+    <div className="frame">
+      <div className="catalogue-heading">
+        <div><p className="eyebrow">Browse. Choose. Bring your idea.</p><h2 id="catalogue-heading">Your next door,<br/><em>in the details.</em></h2></div>
+        <p>Take a look inside our WPC door catalogue, then download the complete collection to explore every design at your own pace.</p>
+      </div>
+      <div className="catalogue-preview-grid">
+        {previews.map(({ page, title, description }) => <a className="catalogue-preview" key={page} href={`${catalogueUrl}#page=${page}`} target="_blank" rel="noopener noreferrer" aria-label={`View catalogue page ${page}: ${title} (opens PDF in a new tab)`}>
+          <div className="catalogue-preview-image"><img src={`/assets/catalogue/catalogue-page-${page}.png`} alt={`WPC Doors catalogue page ${page}: ${title}`} width="1100" height="712" loading="lazy" decoding="async"/></div>
+          <div className="catalogue-preview-caption"><div><small>Preview 0{page}</small><h3>{title}</h3><p>{description}</p></div><span aria-hidden="true">↗</span></div>
+        </a>)}
+      </div>
+      <div className="catalogue-download-row">
+        <div><strong>The complete collection, ready to save.</strong><p>8 pages · PDF · 9.3 MB</p></div>
+        <a className="primary-button catalogue-download-button" href={catalogueUrl} download="Ganesh-Plywoods-Catalogue.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></svg>Download catalogue</a>
+      </div>
+      <p className="catalogue-note">Like a design? Share its code with us on WhatsApp to confirm sizes, availability and pricing.</p>
+    </div>
+  </section>;
 }
 
 function useDragRail() {
@@ -225,6 +257,7 @@ function Products({ selectedCategory, setSelectedCategory, requestQuote }) {
       </div>
     </div></section>
     <section className="section product-gallery material-gallery"><div className="frame"><SectionHeading eyebrow="Material library" title={<>Built for the way<br/><em>you actually live.</em></>} copy="A clear product-first view of the materials you can discuss with our Sriperumbudur team."/><div className="material-grid">{categories.map((item, index) => <button className={selectedCategory.title === item.title ? 'material-tile is-active' : 'material-tile'} onClick={() => setSelectedCategory(item)} key={item.title}><ReliableImage src={item.image} fallback="/assets/products/plywood.png" alt={item.title}/><span className="tile-number">0{index + 1}</span><div><small>{item.tag.split('/')[1]}</small><h3>{item.title}</h3><p>{item.products.join(' · ')}</p></div><i>↗</i></button>)}</div><p className="visual-note">Images show product categories available for enquiry. Please contact the shop for current designs, sizes and stock.</p></div></section>
+    <CatalogueSection/>
     <section className="section quote-strip"><div className="frame"><div><p className="eyebrow light">Need an exact price?</p><h2>Tell us the material,<br/><em>size and quantity.</em></h2></div><button className="primary-button" onClick={() => requestQuote(selectedCategory.title)}>Start a quote <span>↗</span></button></div></section>
   </main>;
 }
@@ -240,6 +273,6 @@ function Contact({ form, setForm, requestQuote }) {
 
 function SectionHeading({ eyebrow, title, copy }) { return <div className="section-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2></div><p>{copy}</p></div>; }
 
-function Footer({ navigate }) { return <footer><div className="frame footer-grid"><button className="brand brand-reimagined footer-brand" onClick={() => navigate('home')}><span className="brand-monogram" aria-hidden="true">GP</span><span className="brand-copy"><strong>Ganesh</strong><em>Plywoods</em><small>Glass · Hardware · Interiors</small></span></button><div><p>Primary mobile</p><a href={`tel:+91${primaryPhone}`}>{formatPhone(primaryPhone)}</a></div><div><p>Alternate mobile</p><a href={`tel:+91${alternatePhone}`}>{formatPhone(alternatePhone)}</a></div><div><p>Visit us</p><a href={mapUrl} target="_blank" rel="noreferrer">Sriperumbudur ↗</a></div></div><div className="frame footer-bottom">© {new Date().getFullYear()} Ganesh Plywoods. All rights reserved.</div></footer>; }
+function Footer({ navigate }) { return <footer><div className="frame footer-grid"><button className="brand brand-reimagined footer-brand" onClick={() => navigate('home')} aria-label="Ganesh Plywoods home"><img className="brand-logo" src={logoUrl} alt="Shree Ganesh elephant logo" width="72" height="72"/><span className="brand-copy"><strong>Ganesh</strong><em>Plywoods</em><small>Glass · Hardware · Interiors</small></span></button><div><p>Primary mobile</p><a href={`tel:+91${primaryPhone}`}>{formatPhone(primaryPhone)}</a></div><div><p>Alternate mobile</p><a href={`tel:+91${alternatePhone}`}>{formatPhone(alternatePhone)}</a></div><div><p>Visit us</p><a href={mapUrl} target="_blank" rel="noreferrer">Sriperumbudur ↗</a><a className="footer-catalogue-link" href={catalogueUrl} download="Ganesh-Plywoods-Catalogue.pdf">Download catalogue ↓</a></div></div><div className="frame footer-bottom">© {new Date().getFullYear()} Ganesh Plywoods. All rights reserved.</div></footer>; }
 
 createRoot(document.getElementById('root')).render(<App />);
