@@ -95,6 +95,18 @@
 @keyframes mobile-card-arrive{from{opacity:0;transform:translateX(22px) scale(.97)}to{opacity:1;transform:translateX(0) scale(1)}}
 @keyframes mobile-transition-mark{from{opacity:0;transform:scale(.55) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(0)}}
 
+/* Actual catalogue designs retain their complete proportions. */
+.door-design-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px;margin-bottom:26px}
+.door-design-card{min-width:0;background:#fff;border:1px solid #ded8ce;border-radius:12px;overflow:hidden;scroll-snap-align:start}
+.door-design-rail .door-design-card{flex:0 0 245px}
+.door-design-image{display:flex;align-items:center;justify-content:center;height:330px;padding:16px;background:#f2ede5}
+.door-design-image img{width:100%;height:100%;object-fit:contain}
+.door-design-details{padding:18px}.door-design-details p{font-size:10px;color:#6a6460;margin:0 0 8px;text-transform:uppercase;letter-spacing:.07em}
+.door-design-details h3{font-size:28px;color:#22232a}.door-design-details button{margin-top:14px;min-height:44px;width:100%;padding:8px;border:1px solid #a7202b;border-radius:6px;background:#fff;color:#a7202b;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.door-design-details button:hover{background:#a7202b;color:#fff}.door-design-details button:focus-visible,.door-design-image:focus-visible{outline:3px solid #a7202b;outline-offset:-3px}
+img[src*="/catalogue/products/"]{object-fit:contain!important;background:#f2ede5}
+@media(max-width:1050px){.door-design-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:680px){.door-design-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.door-design-grid .door-design-image{height:240px;padding:10px}.door-design-grid .door-design-details{padding:12px}.door-design-details h3{font-size:24px}.real-designs .rail-helper{line-height:1.7}}
 /* Original elephant branding and downloadable door catalogue. */
 .brand.brand-reimagined .brand-logo{width:72px;height:72px;object-fit:contain;flex-shrink:0}
 .logo-loader{background:transparent;border:0;box-shadow:none}

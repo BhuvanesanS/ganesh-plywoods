@@ -14,7 +14,7 @@ const catalogueUrl = '/assets/catalogue/ganesh-plywoods-catalogue.pdf';
 const categories = [
   { tag: '01 / Sheet materials', title: 'Plywood for every build', text: 'Normal, colour and waterproof plywood options for furniture, cabinetry and interior work.', image: '/assets/products/plywood.png', products: ['Normal plywood', 'Colour plywoods', 'Waterproof plywoods'] },
   { tag: '02 / Glass & mirrors', title: 'Light, clarity and detail', text: 'Explore glass, mirrors and design-led choices for homes, stores and interiors.', image: '/assets/products/glass-mirror.png', products: ['Normal glass', 'Custom design glass', 'Mirrors'] },
-  { tag: '03 / Doors', title: 'Everyday door choices', text: 'Simple and designer PVC doors paired with the hardware needed to complete the installation.', image: '/assets/products/pvc-doors.png', products: ['Normal PVC doors', 'Designer PVC doors', 'Door fittings'] },
+  { tag: '03 / Doors', title: 'WPC & PVC door choices', text: 'Explore WPC designs from our catalogue alongside PVC door options. Confirm sizes, finishes and availability with our team.', image: '/assets/catalogue/products/slf-01.jpg', products: ['WPC catalogue designs', 'PVC door options', 'Door fittings'] },
   { tag: '04 / Hardware', title: 'The finishing layer', text: 'Handles, locks, Fevicol and tapes for the details that make a space work well.', image: '/assets/products/hardware.png', products: ['Designer handles', 'Door handles & locks', 'Fevicol & tapes'] },
   { tag: '05 / Surface choices', title: 'Laminates & panels', text: 'Discuss surface and panel directions for furniture, cabinets and interior projects.', image: '/assets/products/plywood.png', products: ['Decorative panels', 'Furniture surface ideas', 'Colour directions'] },
   { tag: '06 / Everyday fittings', title: 'Handles & locks', text: 'Practical hardware choices for doors, cabinets and daily-use spaces.', image: '/assets/products/hardware.png', products: ['Cabinet handles', 'Door locks', 'Fitting accessories'] },
@@ -25,7 +25,7 @@ const categories = [
 const inspiration = [
   { label: 'Plywood & boards', title: 'A strong foundation for every build.', image: '/assets/products/plywood.png' },
   { label: 'Glass & mirrors', title: 'Bring light, depth and clarity in.', image: '/assets/products/glass-mirror.png' },
-  { label: 'Doors & fittings', title: 'Make the everyday entrance better.', image: '/assets/products/pvc-doors.png' }
+  { label: 'WPC doors · SLF 67', title: 'A design from our own catalogue.', image: '/assets/catalogue/products/slf-67.jpg' }
 ];
 
 const showroomScenes = [
@@ -34,12 +34,10 @@ const showroomScenes = [
   { label: 'Build', title: 'Move forward with a clearer product enquiry.', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85', fallback: '/assets/products/pvc-doors.png' }
 ];
 
-const liveProductScenes = [
-  { label: 'Plywood & cabinetry', title: 'Start with the material that carries the work.', image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1500&q=88', fallback: '/assets/products/plywood.png' },
-  { label: 'Glass & light', title: 'Bring more openness into a finished space.', image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1500&q=88', fallback: '/assets/products/glass-mirror.png' },
-  { label: 'Finish & detail', title: 'Complete the everyday touchpoints beautifully.', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1500&q=88', fallback: '/assets/products/hardware.png' },
-  { label: 'Doors & hardware', title: 'Choose the elements that meet every day.', image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1500&q=88', fallback: '/assets/products/pvc-doors.png' }
-];
+const catalogueDesigns = ['01', '02', '03', '04', '05', '66', '67', '68', '69', '70'].map(code => ({
+  code: `SLF ${code}`,
+  image: `/assets/catalogue/products/slf-${code}.jpg`,
+}));
 
 function formatPhone(phone) {
   return `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`;
@@ -138,7 +136,7 @@ function App() {
     <div className="page-content" key={page}>
       {page === 'home' && <Home navigate={navigate} requestQuote={requestQuote} openQuote={() => setQuoteOpen(true)} />}
       {page === 'products' && <Products selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} requestQuote={requestQuote} />}
-      {page === 'catalogue' && <main><CatalogueSection/></main>}
+      {page === 'catalogue' && <main><CatalogueSection/><ProductRail requestQuote={requestQuote} grid/></main>}
       {page === 'trade' && <Trade navigate={navigate} />}
       {page === 'contact' && <Contact form={form} setForm={setForm} requestQuote={requestQuote} />}
     </div>
@@ -191,27 +189,42 @@ function CatalogueSection() {
 
 function useDragRail() {
   const railRef = useRef(null);
-  const dragRef = useRef({ active: false, startX: 0, startScroll: 0 });
+  const dragRef = useRef({ active: false, moved: false, startX: 0, startScroll: 0 });
   const [dragging, setDragging] = useState(false);
   const onPointerDown = (event) => {
     const rail = railRef.current;
-    if (!rail) return;
-    dragRef.current = { active: true, startX: event.clientX, startScroll: rail.scrollLeft };
-    rail.setPointerCapture(event.pointerId);
-    setDragging(true);
+    if (!rail || event.button !== 0) return;
+    dragRef.current = { active: true, moved: false, startX: event.clientX, startScroll: rail.scrollLeft };
   };
   const onPointerMove = (event) => {
     const rail = railRef.current;
     if (!rail || !dragRef.current.active) return;
-    rail.scrollLeft = dragRef.current.startScroll - (event.clientX - dragRef.current.startX) * 1.15;
+    const delta = event.clientX - dragRef.current.startX;
+    if (Math.abs(delta) > 6) {
+      dragRef.current.moved = true;
+      rail.setPointerCapture(event.pointerId);
+      setDragging(true);
+    }
+    if (dragRef.current.moved) rail.scrollLeft = dragRef.current.startScroll - delta * 1.15;
   };
   const onPointerEnd = () => { dragRef.current.active = false; setDragging(false); };
-  return { railRef, dragging, onPointerDown, onPointerMove, onPointerEnd };
+  const onClickCapture = event => {
+    if (dragRef.current.moved && event.detail !== 0) { event.preventDefault(); event.stopPropagation(); }
+  };
+  return { railRef, dragging, onPointerDown, onPointerMove, onPointerEnd, onClickCapture };
 }
 
-function ProductRail({ requestQuote }) {
+function ProductRail({ requestQuote, grid = false }) {
   const drag = useDragRail();
-  return <section className="rail-section"><div className="frame"><div className="rail-heading"><div><p className="eyebrow">Explore by material</p><h2>Swipe, drag and<br/><em>find your direction.</em></h2></div><p>Use the rail on mobile or drag with your cursor on desktop. Every card opens a direct material enquiry.</p></div><div ref={drag.railRef} className={drag.dragging ? 'product-rail is-dragging' : 'product-rail'} onPointerDown={drag.onPointerDown} onPointerMove={drag.onPointerMove} onPointerUp={drag.onPointerEnd} onPointerCancel={drag.onPointerEnd} onPointerLeave={drag.onPointerEnd}>{liveProductScenes.map((item, index) => <article className="rail-card" key={item.title}><ReliableImage src={item.image} fallback={item.fallback} alt={item.title}/><div><span>0{index + 1} · {item.label}</span><h3>{item.title}</h3><button onClick={() => requestQuote(item.label)}>Ask about this <b>↗</b></button></div></article>)}</div><p className="rail-helper">Drag to explore · Product availability is confirmed by the Ganesh Plywoods team.</p></div></section>;
+  return <section className="rail-section real-designs"><div className="frame">
+    <div className="rail-heading"><div><p className="eyebrow">From our WPC Doors catalogue</p><h2>Real designs.<br/><em>Your next entrance.</em></h2></div><p>Ten selected designs, extracted directly from our catalogue. View the complete door image or enquire using its design code.</p></div>
+    <div ref={drag.railRef} className={grid ? 'door-design-grid' : `product-rail door-design-rail${drag.dragging ? ' is-dragging' : ''}`} {...(!grid ? { onPointerDown: drag.onPointerDown, onPointerMove: drag.onPointerMove, onPointerUp: drag.onPointerEnd, onPointerCancel: drag.onPointerEnd, onPointerLeave: drag.onPointerEnd, onClickCapture: drag.onClickCapture } : {})}>
+      {catalogueDesigns.map(item => <article className="door-design-card" key={item.code}>
+        <a className="door-design-image" href={item.image} target="_blank" rel="noopener noreferrer" aria-label={`View full ${item.code} door design (opens in new tab)`} draggable="false"><img src={item.image} alt={`WPC door design ${item.code} from the supplied catalogue`} loading="lazy" decoding="async" draggable="false"/></a>
+        <div className="door-design-details"><p>WPC Doors · Volume II</p><h3>{item.code}</h3><button onClick={() => requestQuote(`WPC door — ${item.code} (Catalogue, PDF page 2)`)}>Enquire about {item.code} <span aria-hidden="true">↗</span></button></div>
+      </article>)}
+    </div><p className="rail-helper">{grid ? 'Select an image to view it in full.' : 'Swipe or drag to explore.'} These are catalogue images, not a live stock feed. Confirm sizes, colours, availability and pricing with our team.</p>
+  </div></section>;
 }
 
 function QuotePopup({ form, setForm, onClose, onSubmit }) {
@@ -257,6 +270,7 @@ function Products({ selectedCategory, setSelectedCategory, requestQuote }) {
       </div>
     </div></section>
     <section className="section product-gallery material-gallery"><div className="frame"><SectionHeading eyebrow="Material library" title={<>Built for the way<br/><em>you actually live.</em></>} copy="A clear product-first view of the materials you can discuss with our Sriperumbudur team."/><div className="material-grid">{categories.map((item, index) => <button className={selectedCategory.title === item.title ? 'material-tile is-active' : 'material-tile'} onClick={() => setSelectedCategory(item)} key={item.title}><ReliableImage src={item.image} fallback="/assets/products/plywood.png" alt={item.title}/><span className="tile-number">0{index + 1}</span><div><small>{item.tag.split('/')[1]}</small><h3>{item.title}</h3><p>{item.products.join(' · ')}</p></div><i>↗</i></button>)}</div><p className="visual-note">Images show product categories available for enquiry. Please contact the shop for current designs, sizes and stock.</p></div></section>
+    <ProductRail requestQuote={requestQuote} grid/>
     <CatalogueSection/>
     <section className="section quote-strip"><div className="frame"><div><p className="eyebrow light">Need an exact price?</p><h2>Tell us the material,<br/><em>size and quantity.</em></h2></div><button className="primary-button" onClick={() => requestQuote(selectedCategory.title)}>Start a quote <span>↗</span></button></div></section>
   </main>;
